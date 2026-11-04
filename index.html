@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="David Matimu — DevSecOps / Platform Engineer. Terraform, Kubernetes (EKS, OpenShift), Helm, AWS. Portfolio and labs.">
+<title>David Matimu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a runbook. One narrow reading column, a mono "status rail" for every lab, labels set like config keys. */
+:root{
+  --bg:#f3f4f2;
+  --panel:#ffffff;
+  --ink:#1b2027;
+  --muted:#5b6470;
+  --line:#d6dad9;
+  --accent:#b4582a;
+  --accent-ink:#8d421d;
+  --ok:#2f7a4d;
+  --warn:#a3691a;
+  --code-bg:#e9ebe8;
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13161a;--panel:#1b1f25;--ink:#e8e9e6;--muted:#9aa3ad;--line:#2d333b;
+    --accent:#e0804a;--accent-ink:#f0a77e;--ok:#6cc08b;--warn:#d9a64a;--code-bg:#0f1114;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13161a;--panel:#1b1f25;--ink:#e8e9e6;--muted:#9aa3ad;--line:#2d333b;
+  --accent:#e0804a;--accent-ink:#f0a77e;--ok:#6cc08b;--warn:#d9a64a;--code-bg:#0f1114;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+a{color:var(--accent-ink);text-decoration-thickness:1px;text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:960px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:0}
+.key{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+code,.mono{font-family:var(--mono);font-size:.86em}
+code{background:var(--code-bg);padding:.1em .35em;border-radius:3px}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:18px;border-bottom:1px solid var(--line)}
+.top .name{font-family:var(--mono);font-weight:600;font-size:.95rem}
+.top nav{display:flex;gap:18px;flex-wrap:wrap}
+.top nav a{font-family:var(--mono);font-size:.8rem;color:var(--muted);text-decoration:none}
+.top nav a:hover{color:var(--ink)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:40px;padding-block:56px 48px;border-bottom:1px solid var(--line);align-items:start}
+.hero h1{font-size:clamp(2.4rem,6vw,4rem);font-weight:700;letter-spacing:-.02em}
+.hero .lede{font-size:1.2rem;max-width:34ch;margin-top:18px;color:var(--ink)}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin-top:28px;font-size:.95rem}
+.facts dt{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.facts dd{margin:0}
+.tree{background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:16px 18px;font-family:var(--mono);font-size:.78rem;line-height:1.5;overflow-x:auto;min-width:0}
+.tree .c{color:var(--muted)}
+.tree .a{color:var(--accent-ink)}
+.tree-cap{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:8px}
+
+/* sections */
+section{padding-block:48px;border-bottom:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+.sec-head p{color:var(--muted);max-width:60ch}
+
+/* skills */
+.skills{display:grid;grid-template-columns:repeat(3,1fr);gap:22px 32px}
+.skills .key{margin-bottom:8px;display:block}
+.skills ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.skills li{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.88rem;background:var(--panel)}
+
+/* labs */
+.labs{display:grid;gap:14px}
+.lab{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px 24px;min-width:0}
+.lab .rail{display:flex;flex-direction:column;gap:10px;font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:4px;padding:3px 8px;font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;width:max-content}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.chip.built{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.chip.progress{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.chip.planned{color:var(--muted);background:color-mix(in srgb,var(--muted) 14%,transparent)}
+.lab .main{min-width:0}
+.lab h3{margin-bottom:6px}
+.lab .what{color:var(--muted);font-size:.95rem;margin-bottom:12px}
+.lab .proves{margin:0;padding-left:18px;font-size:.97rem}
+.lab .proves li+li{margin-top:3px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.tags span{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);border-radius:4px;padding:2px 7px;color:var(--muted)}
+.links{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{display:inline-block;font-family:var(--mono);font-size:.78rem;padding:6px 12px;border-radius:5px;border:1px solid var(--accent);color:var(--accent-ink);text-decoration:none;background:transparent}
+.btn.ghost{border-color:var(--line);color:var(--muted);border-style:dashed}
+
+/* experience */
+.job{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;padding-block:22px;border-top:1px solid var(--line)}
+.job:first-of-type{border-top:0;padding-top:0}
+.job .when{font-family:var(--mono);font-size:.78rem;color:var(--muted);padding-top:4px}
+.job h3{margin-bottom:2px}
+.job .org{color:var(--muted);margin-bottom:12px}
+.job ul{margin:0;padding-left:18px}
+.job li+li{margin-top:5px}
+
+/* two-up */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.two ul{margin:0;padding-left:18px}
+.two li+li{margin-top:5px}
+.note{font-size:.9rem;color:var(--muted);margin-top:8px}
+
+/* contact */
+.contact{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.email{display:inline-flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 14px;font-family:var(--mono);font-size:.9rem}
+.email button{font-family:var(--mono);font-size:.75rem;border:1px solid var(--line);background:var(--code-bg);color:var(--ink);border-radius:4px;padding:4px 8px;cursor:pointer}
+footer{padding-block:28px;font-family:var(--mono);font-size:.72rem;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+@media (max-width:720px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:28px;padding-block:40px 36px}
+  .skills{grid-template-columns:1fr}
+  .lab,.job{grid-template-columns:minmax(0,1fr);gap:12px}
+  .lab .rail{flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px}
+  .two{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){
+  .lab{transition:border-color .15s}
+  .lab:hover{border-color:var(--accent)}
+}
+</style>
+<style>html{color-scheme:light dark} body{margin:0} img{max-width:100%}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<header class="top">
+  <div class="name">david.matimu</div>
+  <nav>
+    <a href="#labs">labs</a>
+    <a href="#experience">experience</a>
+    <a href="#skills">skills</a>
+    <a href="#contact">contact</a>
+  </nav>
+</header>
+
+<section class="hero" id="top">
+  <div>
+    <p class="key">DevSecOps · Platform Engineer · Washington, DC area</p>
+    <h1 style="margin-top:10px">David Matimu</h1>
+    <p class="lede">I keep data and AI platforms running on AWS and Kubernetes in places that can't phone home.</p>
+    <dl class="facts">
+      <dt>Clearance</dt><dd>Active TS/SCI</dd>
+      <dt>Focus</dt><dd>Terraform &amp; Terragrunt, EKS/OpenShift, Helm, GitLab CI, IAM</dd>
+      <dt>Networks</dt><dd>5 years on unclassified, SIPR and JWICS environments</dd>
+      <dt>Now</dt><dd>Building DevSecOps infrastructure on OpenShift for an Intelligence Community R&amp;D program (Booz Allen Hamilton)</dd>
+    </dl>
+  </div>
+  <div>
+<pre class="tree">lab-live/
+├── root.hcl         <span class="c"># state backend + generated provider</span>
+├── account.hcl
+└── us-east-1/
+    ├── region.hcl
+    ├── dev/
+    │   ├── env.hcl
+    │   └── apps/app-a/
+    │       ├── kms/
+    │       ├── secrets/     <span class="a"># value never touches state</span>
+    │       ├── rds/
+    │       └── ec2/
+    └── prod/        <span class="c"># same tree, only env.hcl changes</span></pre>
+    <p class="tree-cap">The layout I rebuild from memory at the end of the Terraform lab. Every unit gets its own state; secrets move between units as ARNs only.</p>
+  </div>
+</section>
+
+<section id="labs">
+  <div class="sec-head">
+    <h2>Labs &amp; projects</h2>
+    <p>Hands-on builds in a personal AWS account and a home cluster. Nothing here comes from work; each one exists to turn something I've operated into something I've built from scratch.</p>
+  </div>
+  <div class="labs">
+
+    <article class="lab">
+      <div class="rail">
+        <span class="chip progress">In progress</span>
+        <span>14 sessions</span>
+        <span>AWS · personal acct</span>
+      </div>
+      <div class="main">
+        <h3>Terraform to Senior</h3>
+        <p class="what">A 14-day Terraform and Terragrunt lab that ends with rebuilding a multi-environment live repo from memory.</p>
+        <ul class="proves">
+          <li>Remote state in S3 with versioning, KMS encryption and native locking; one state file per unit</li>
+          <li>Versioned modules pulled by Git tag, pinned providers, committed lock files</li>
+          <li>Terragrunt layers (<code>account.hcl</code> → <code>region.hcl</code> → <code>env.hcl</code>) with <code>dependency</code> blocks and mock outputs</li>
+          <li>Secrets with nothing typed by hand: ephemeral <code>random_password</code> + write-only secret versions, RDS-managed master passwords, IAM scoped to a single ARN</li>
+          <li>Offline provider mirror so <code>terraform init</code> works on an air-gapped network</li>
+        </ul>
+        <div class="tags"><span>terraform</span><span>terragrunt</span><span>s3 backend</span><span>kms</span><span>secrets manager</span><span>rds</span><span>iam</span><span>tflint · checkov · gitleaks</span></div>
+        <div class="links"><a class="btn ghost" href="#contact">Repo link coming</a></div>
+      </div>
+    </article>
+
+    <article class="lab">
+      <div class="rail">
+        <span class="chip planned">Planned</span>
+        <span>13 phases</span>
+        <span>AWS + kind</span>
+      </div>
+      <div class="main">
+        <h3>EKS Platform Deployment</h3>
+        <p class="what">Stand up a vendor-style AI platform the way a customer team does it: three Terraform states, an image promotion gate, a hand-written Helm chart, and a GitLab pipeline with manual prod gates.</p>
+        <ul class="proves">
+          <li>VPC, EKS (managed node groups, OIDC, add-ons) and RDS/S3/IRSA as separate states for blast-radius control</li>
+          <li>Images promoted staging → prod by digest, with ECR scan-on-push at the entry point</li>
+          <li>Helm chart with Ingress (ALB), ConfigMap/Secret split, IRSA service account, RBAC, NetworkPolicy and a post-install bootstrap hook</li>
+          <li>Terraform outputs wired into Helm values; smoke tests, deliberate breakages, <code>helm rollback</code></li>
+          <li>Day-2: EKS minor-version upgrade and provider upgrade, one step at a time</li>
+        </ul>
+        <div class="tags"><span>eks</span><span>helm</span><span>irsa</span><span>ecr · oci charts</span><span>gitlab ci</span><span>alb ingress</span><span>network policy</span></div>
+        <div class="links"><a class="btn ghost" href="#contact">Repo link coming</a></div>
+      </div>
+    </article>
+
+    <article class="lab">
+      <div class="rail">
+        <span class="chip built">Built</span>
+        <span>In-cluster agent</span>
+        <span>Kubernetes</span>
+      </div>
+      <div class="main">
+        <h3>Kubernetes Incident-Triage Agent</h3>
+        <p class="what">An LLM-backed agent that runs inside the cluster, reads failing workloads with read-only access, and writes a first-pass triage for the on-call engineer.</p>
+        <ul class="proves">
+          <li>Delivered with Argo CD; Helm chart with per-environment overlays</li>
+          <li>Read-only ClusterRole RBAC, IRSA with a sub-pinned trust policy, distroless image</li>
+          <li>Prometheus metrics with per-incident cost tracking; OpenTelemetry traces</li>
+          <li>Designed with an air-gap answer: model and dependencies pulled from an internal registry</li>
+        </ul>
+        <div class="tags"><span>argo cd</span><span>rbac</span><span>irsa</span><span>prometheus</span><span>opentelemetry</span><span>helm</span><span>python</span></div>
+        <div class="links"><a class="btn ghost" href="#contact">Repo link coming</a></div>
+      </div>
+    </article>
+
+    <article class="lab">
+      <div class="rail">
+        <span class="chip progress">In progress</span>
+        <span>OpenShift</span>
+        <span>Home lab</span>
+      </div>
+      <div class="main">
+        <h3>Private LLM on OpenShift</h3>
+        <p class="what">A self-hosted language model served inside an OpenShift cluster, with no outbound internet, as the kind of platform an AI/ML team would be handed on a classified network.</p>
+        <ul class="proves">
+          <li>GPU inference served behind a LiteLLM-style gateway with vLLM</li>
+          <li>OpenSearch vector search phase for retrieval over internal documents</li>
+          <li>Argo CD-driven deploys, routes, image mirroring for disconnected operation</li>
+        </ul>
+        <div class="tags"><span>openshift</span><span>vllm</span><span>litellm</span><span>opensearch</span><span>argo cd</span><span>gpu</span></div>
+        <div class="links"><a class="btn ghost" href="#contact">Repo link coming</a></div>
+      </div>
+    </article>
+
+    <article class="lab">
+      <div class="rail">
+        <span class="chip planned">Planned</span>
+        <span>8 labs</span>
+        <span>Databricks on AWS</span>
+      </div>
+      <div class="main">
+        <h3>Databricks DevOps Curriculum</h3>
+        <p class="what">Eight labs that take a Databricks workspace from provisioning to disaster recovery, calibrated to the isolation patterns of SIPR and JWICS networks.</p>
+        <ul class="proves">
+          <li>Infra provisioning, Unity Catalog, CI/CD, cost governance, observability, network hardening, DR</li>
+          <li>Keycloak as the OIDC/SAML identity provider, with scripted SCIM reconciliation against the Databricks REST API</li>
+          <li>Two-phase network design for a home lab, with a real cost section (per-hour figures, trial credit expiry)</li>
+        </ul>
+        <div class="tags"><span>databricks</span><span>unity catalog</span><span>keycloak</span><span>scim</span><span>terraform</span></div>
+        <div class="links"><a class="btn ghost" href="#contact">Repo link coming</a></div>
+      </div>
+    </article>
+
+    <article class="lab">
+      <div class="rail">
+        <span class="chip progress">In progress</span>
+        <span>Full stack</span>
+        <span>MEAN + Leaflet</span>
+      </div>
+      <div class="main">
+        <h3>SENTINEL</h3>
+        <p class="what">A geospatial situational-awareness dashboard: live USGS earthquake data on a map with a reactive filter panel.</p>
+        <ul class="proves">
+          <li>Angular front end with Leaflet/Mapbox; filters built on RxJS <code>debounceTime</code> + <code>switchMap</code></li>
+          <li>Node worker ingests USGS feeds into MongoDB, served through a <code>POST /query</code> endpoint</li>
+        </ul>
+        <div class="tags"><span>angular</span><span>node</span><span>mongodb</span><span>leaflet</span><span>rxjs</span></div>
+        <div class="links"><a class="btn ghost" href="#contact">Repo link coming</a></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section id="experience">
+  <div class="sec-head"><h2>Experience</h2></div>
+
+  <div class="job">
+    <div class="when">2022 – present</div>
+    <div>
+      <h3>DevSecOps / Platform Engineer</h3>
+      <p class="org">Booz Allen Hamilton · Springfield, VA</p>
+      <ul>
+        <li><strong>Current:</strong> building the infrastructure and GitLab CI pipelines that ingest satellite data onto OpenShift for an Intelligence Community research and development program, using Argo CD inside the cluster.</li>
+        <li><strong>ADVANA (DoD data platform), 2022–2026:</strong> Platform Reliability Engineer keeping a multi-service Kubernetes AI/data platform running across unclassified and SIPR AWS environments, dev through production.</li>
+        <li>Administered a Databricks analytics platform: cluster lifecycle, access control (users, groups, secret scopes), scheduled jobs, and the IAM/S3/network underneath it.</li>
+        <li>Provisioned AWS resources (RDS, S3, IAM) with Terraform and Terragrunt; restructured the Terraform repo to be DRY and organized by environment.</li>
+        <li>Deployed vendor-supplied Kubernetes manifests via Helm: service deployments, Ingress, ConfigMaps/Secrets, IRSA service accounts, RBAC and network policies, with per-environment values.</li>
+        <li>Led the Collibra platform upgrade cutover on SIPR, including the Catalog 2.0 structural work.</li>
+        <li>Automated RHEL fleet configuration with Ansible; managed Databricks access on SIPR and JWICS through Keycloak SSO; ran the IAM GitOps pipeline.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="job">
+    <div class="when">2021 – 2022</div>
+    <div>
+      <h3>Software Developer</h3>
+      <p class="org">Joint Warfare Analysis Center (JWAC)</p>
+      <ul>
+        <li>Rebuilt and migrated an internal HR platform from a WPF / SQL Server desktop app to React, Node.js and MSSQL, then deployed it.</li>
+        <li>First exposure to the full lifecycle, from writing the code to running it, which is what pulled me toward DevOps.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="sec-head"><h2>Skills</h2></div>
+  <div class="skills">
+    <div><span class="key">Infrastructure as code</span>
+      <ul><li>Terraform</li><li>Terragrunt</li><li>Ansible</li><li>Helm</li><li>Argo CD</li></ul></div>
+    <div><span class="key">Platforms</span>
+      <ul><li>AWS (EKS, IAM, S3, RDS, VPC, ECR, KMS)</li><li>Kubernetes</li><li>OpenShift</li><li>Databricks</li><li>RHEL</li><li>Docker</li></ul></div>
+    <div><span class="key">Delivery &amp; identity</span>
+      <ul><li>GitLab CI/CD</li><li>GitHub Actions</li><li>Keycloak SSO</li><li>IAM / IRSA</li><li>Python</li><li>Bash</li></ul></div>
+    <div><span class="key">Vendor platforms operated</span>
+      <ul><li>C3 AI</li><li>Collibra</li><li>Databricks</li></ul></div>
+    <div><span class="key">Learning next</span>
+      <ul><li>AWS Solutions Architect Associate</li><li>Go (Kubernetes operators)</li><li>vLLM / LiteLLM / GPU inference</li></ul></div>
+  </div>
+</section>
+
+<section id="background">
+  <div class="two">
+    <div>
+      <h2 style="font-size:1.3rem;margin-bottom:12px">Education</h2>
+      <ul>
+        <li><strong>University of Delaware</strong>, B.S. Computer Engineering, 2020</li>
+      </ul>
+    </div>
+    <div>
+      <h2 style="font-size:1.3rem;margin-bottom:12px">Certifications &amp; clearance</h2>
+      <ul>
+        <li>CompTIA Security+</li>
+        <li>AWS Certified Solutions Architect – Associate (in progress)</li>
+        <li>Active TS/SCI clearance</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="sec-head"><h2>Contact</h2><p>Email is the fastest way to reach me.</p></div>
+  <div class="contact">
+    <span class="email"><span id="email-text">davidm.dev007@gmail.com</span><button type="button" id="copy-email">copy</button></span>
+    <a class="btn" href="https://www.linkedin.com/in/davidmatimu/">LinkedIn</a>
+    <a class="btn" href="https://github.com/Davidmatimu">GitHub</a>
+  </div>
+</section>
+
+<footer>
+  <span>David Matimu · Alexandria, VA</span>
+  <span>Every lab ends with <code>terraform destroy</code>.</span>
+</footer>
+</div>
+
+<script>
+(function(){
+  var b=document.getElementById('copy-email'),t=document.getElementById('email-text');
+  if(!b||!t)return;
+  b.addEventListener('click',function(){
+    var s=t.textContent;
+    function done(ok){b.textContent=ok?'copied':'select it';setTimeout(function(){b.textContent='copy'},1500)}
+    try{
+      navigator.clipboard.writeText(s).then(function(){done(true)},function(){fallback()});
+    }catch(e){fallback()}
+    function fallback(){
+      try{var r=document.createRange();r.selectNodeContents(t);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);}catch(e){}
+      done(false);
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
